@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Warriors of Etheria — 3v3 MOBA RPG</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+  <!-- ==================== AUTH SCREEN ==================== -->
+  <div id="authScreen">
+    <div class="auth-bg"></div>
+    <div class="auth-content">
+      <div class="auth-logo">
+        <h1>⚔️ Warriors of Etheria</h1>
+        <p class="auth-subtitle">3v3 MOBA RPG</p>
+      </div>
+
+      <div class="auth-card">
+        <!-- Tabs -->
+        <div class="auth-tabs">
+          <button id="tabLogin" class="auth-tab active-tab">Sign In</button>
+          <button id="tabRegister" class="auth-tab">Register</button>
+        </div>
+
+        <!-- Error -->
+        <div id="authError" class="auth-error hidden"></div>
+        <div id="authSpinner" class="auth-spinner hidden">⏳ Please wait...</div>
+
+        <!-- LOGIN FORM -->
+        <div id="loginForm">
+          <button id="btnGoogleLogin" class="btn-google">
+            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="G" width="18" />
+            Continue with Google
+          </button>
+          <div class="auth-divider"><span>or</span></div>
+          <div class="auth-field">
+            <label>Email</label>
+            <input type="email" id="loginEmail" placeholder="your@email.com" autocomplete="email" />
+          </div>
+          <div class="auth-field">
+            <label>Password</label>
+            <input type="password" id="loginPassword" placeholder="••••••••" autocomplete="current-password" />
+          </div>
+          <button id="btnEmailLogin" class="btn-primary auth-btn">Sign In</button>
+        </div>
+
+        <!-- REGISTER FORM -->
+        <div id="registerForm" class="hidden">
+          <button id="btnGoogleRegister" class="btn-google">
+            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="G" width="18" />
+            Sign up with Google
+          </button>
+          <div class="auth-divider"><span>or</span></div>
+          <div class="auth-field">
+            <label>Username</label>
+            <input type="text" id="regUsername" placeholder="WarriorName" maxlength="20" autocomplete="username" />
+          </div>
+          <div class="auth-field">
+            <label>Email</label>
+            <input type="email" id="regEmail" placeholder="your@email.com" autocomplete="email" />
+          </div>
+          <div class="auth-field">
+            <label>Password</label>
+            <input type="password" id="regPassword" placeholder="Min 6 characters" autocomplete="new-password" />
+          </div>
+          <div class="auth-field">
+            <label>Confirm Password</label>
+            <input type="password" id="regConfirm" placeholder="Re-enter password" autocomplete="new-password" />
+          </div>
+          <button id="btnEmailRegister" class="btn-primary auth-btn">Create Account</button>
+        </div>
+      </div><!-- /auth-card -->
+    </div>
+  </div><!-- /authScreen -->
+
+
+  <!-- ==================== MAIN MENU ==================== -->
+  <div id="mainMenu" class="hidden">
+    <div class="menu-bg-anim"></div>
+    <div class="menu-content">
+
+      <!-- Player badge (top right) -->
+      <div id="menuBadge" class="menu-badge hidden">
+        <div id="menuPlayerAvatar" class="menu-avatar">👤</div>
+        <div class="menu-badge-info">
+          <div id="menuPlayerName" class="menu-badge-name">Warrior</div>
+          <div id="menuPlayerId" class="menu-badge-id"></div>
+          <div class="menu-badge-record">
+            <span id="menuPlayerWins" class="wins-text">0W</span>
+            <span class="record-sep">/</span>
+            <span id="menuPlayerLosses" class="losses-text">0L</span>
+          </div>
+        </div>
+        <button id="btnProfile" class="btn-profile" title="View Profile">👤 Profile</button>
+        <button id="btnSignOut" class="btn-signout" title="Sign Out">↩ Sign Out</button>
+      </div>
+
+      <div class="game-logo">
+        <h1>⚔️ Warriors of Etheria</h1>
+        <p class="subtitle">3v3 MOBA RPG</p>
+      </div>
+
+      <div class="menu-buttons">
+        <button id="btnPlay" class="btn-primary menu-main-btn">▶ Play Game</button>
+        <button id="btnHeroes" class="btn-secondary menu-main-btn">🧙 Heroes</button>
+        <button id="btnHowToPlay" class="btn-secondary menu-main-btn">📖 How to Play</button>
+      </div>
+    </div>
+  </div><!-- /mainMenu -->
+
+
+  <!-- ==================== HERO SELECT ==================== -->
+  <div id="heroSelect" class="hidden">
+    <div class="hero-select-content">
+      <h2>⚔️ Choose Your Hero</h2>
+      <p class="hint">Pick your hero, then find a match or invite a friend</p>
+
+      <div id="heroGrid" class="hero-grid"></div>
+
+      <!-- Selected hero preview -->
+      <div id="selectedInfo" class="selected-info hidden">
+        <div id="heroPreview"></div>
+
+        <!-- Match options -->
+        <div class="match-options">
+          <!-- Solo vs AI -->
+          <div class="match-option-card">
+            <div class="match-option-icon">🤖</div>
+            <div class="match-option-label">VS AI</div>
+            <p class="match-option-desc">Play alone against AI opponents</p>
+            <button id="btnConfirm" class="btn-primary">▶ Play Solo</button>
+          </div>
+
+          <!-- Random Match -->
+          <div class="match-option-card">
+            <div class="match-option-icon">🌐</div>
+            <div class="match-option-label">Online Match</div>
+            <p class="match-option-desc">Join a random match with real players</p>
+            <button id="btnFindMatch" class="btn-primary btn-online">🔍 Find Match</button>
+            <div id="matchmakingStatus" class="matchmaking-status"></div>
+            <button id="btnCancelQueue" class="btn-secondary hidden">✕ Cancel</button>
+          </div>
+
+          <!-- Invite by ID -->
+          <div class="match-option-card">
+            <div class="match-option-icon">📨</div>
+            <div class="match-option-label">Invite Friend</div>
+            <p class="match-option-desc">Enter a Player ID to invite directly</p>
+            <div class="invite-input-row">
+              <input type="text" id="invitePlayerIdInput" placeholder="ETH#1234" maxlength="8" />
+              <button id="btnSendInvite" class="btn-primary btn-invite">Send</button>
+            </div>
+            <div id="inviteError" class="invite-error hidden"></div>
+          </div>
+        </div>
+
+        <button id="btnBack" class="btn-secondary back-hero-btn">← Back</button>
+      </div>
+
+      <button id="btnBackMenu" class="btn-secondary back-btn">← Main Menu</button>
+    </div>
+
+    <!-- Incoming invite notification -->
+    <div id="incomingInvitePanel" class="incoming-invite hidden">
+      <div class="invite-from">
+        <span class="invite-icon">📨</span>
+        <div>
+          <div class="invite-from-name" id="inviteFromName">Player</div>
+          <div class="invite-from-id" id="inviteFromId">ETH#0000</div>
+        </div>
+      </div>
+      <div class="invite-body">
+        <p>Invited you to a match!</p>
+        <p>Their hero: <b id="inviteHeroName">?</b></p>
+        <p class="invite-hint">Select a hero first, then accept</p>
+      </div>
+      <div class="invite-actions">
+        <button id="btnAcceptInvite" class="btn-primary invite-accept">✔ Accept</button>
+        <button id="btnDeclineInvite" class="btn-secondary invite-decline">✕ Decline</button>
+      </div>
+    </div>
+  </div><!-- /heroSelect -->
+
+
+  <!-- ==================== LOBBY SCREEN ==================== -->
+  <div id="lobbyScreen" class="hidden">
+    <div class="lobby-content">
+      <h2>⚔️ Match Lobby</h2>
+      <div id="lobbyMatchId" class="lobby-match-id"></div>
+
+      <div id="lobbyPlayers" class="lobby-players"></div>
+
+      <div id="lobbyStatus" class="lobby-status">⏳ Waiting for players...</div>
+
+      <div class="lobby-actions">
+        <button id="btnReady" class="btn-primary lobby-ready-btn">✅ Ready</button>
+        <button id="btnLeaveLobby" class="btn-secondary">← Leave</button>
+      </div>
+
+      <div class="lobby-tips">
+        <p>💡 All players must press Ready to start</p>
+        <p>💡 The host confirms when everyone is ready</p>
+      </div>
+    </div>
+  </div><!-- /lobbyScreen -->
+
+
+  <!-- ==================== HOW TO PLAY ==================== -->
+  <div id="howToPlay" class="hidden">
+    <div class="how-content">
+      <h2>📖 How to Play</h2>
+      <div class="how-grid">
+        <div class="how-card"><h3>🖱️ Move</h3><p>Right-click on the map to move</p></div>
+        <div class="how-card"><h3>⚔️ Attack</h3><p>Right-click on an enemy to attack</p></div>
+        <div class="how-card"><h3>✨ Skills</h3><p>Q / W / E keys<br>R = Ultimate ability</p></div>
+        <div class="how-card"><h3>💰 Gold</h3><p>Kill enemies &amp; minions<br>Press B = Open Shop</p></div>
+        <div class="how-card"><h3>🏆 Win</h3><p>Destroy the enemy Nexus!</p></div>
+        <div class="how-card"><h3>🗺️ Map</h3><p>3 Lanes + Jungle camps</p></div>
+        <div class="how-card"><h3>📷 Camera</h3><p>WASD / Arrow keys to scroll<br>Space = follow hero</p></div>
+        <div class="how-card"><h3>� Online</h3><p>Find a random match or invite a friend using their Player ID</p></div>
+      </div>
+      <button id="btnBackFromHow" class="btn-secondary">← Back</button>
+    </div>
+  </div><!-- /howToPlay -->
+
+
+  <!-- ==================== HEROES GALLERY ==================== -->
+  <div id="heroesGallery" class="hidden">
+    <div class="gallery-content">
+      <h2>🧙 Heroes Roster</h2>
+      <div id="galleryGrid" class="hero-grid gallery-mode"></div>
+      <button id="btnBackGallery" class="btn-secondary">← Back</button>
+    </div>
+  </div><!-- /heroesGallery -->
+
+
+  <!-- ==================== PROFILE SCREEN ==================== -->
+  <div id="profileScreen" class="hidden">
+    <div class="profile-content">
+
+      <!-- Header -->
+      <div class="profile-header">
+        <div class="profile-avatar-wrap">
+          <div id="profileAvatar" class="profile-avatar">👤</div>
+          <button id="avatarUploadBtn" class="btn-avatar-upload">📷 Change Avatar</button>
+          <input type="file" id="avatarInput" accept="image/*" class="hidden" />
+        </div>
+        <div class="profile-header-info">
+          <div id="profileUsername" class="profile-username">Warrior</div>
+          <div id="profilePlayerId" class="profile-player-id"></div>
+          <div id="profileEmail" class="profile-email"></div>
+        </div>
+      </div>
+
+      <!-- Stats grid -->
+      <div class="profile-stats">
+        <div class="stat-card">
+          <div class="stat-val wins-text" id="profileWins">0</div>
+          <div class="stat-label">Wins</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-val losses-text" id="profileLosses">0</div>
+          <div class="stat-label">Losses</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-val" id="profileWR" style="color:#f5a623">0%</div>
+          <div class="stat-label">Win Rate</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-val" id="profileGames">0</div>
+          <div class="stat-label">Games</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-val" id="profileAvgKDA" style="color:#4affff">0/0/0</div>
+          <div class="stat-label">Avg KDA</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-val" id="profileTotalGold" style="color:#f5a623">0</div>
+          <div class="stat-label">Total Gold</div>
+        </div>
+      </div>
+
+      <!-- Match history -->
+      <div class="profile-section">
+        <h3 class="section-title">📜 Match History</h3>
+        <div id="matchHistoryList" class="match-history-list">
+          <div class="history-loading">Loading...</div>
+        </div>
+      </div>
+
+      <button id="btnBackProfile" class="btn-secondary profile-back-btn">← Back to Menu</button>
+    </div>
+  </div><!-- /profileScreen -->
+
+
+  <!-- ==================== GAME SCREEN ==================== -->
+  <div id="gameScreen" class="hidden">
+
+    <!-- Top HUD -->
+    <div id="topHud">
+      <div class="team-hud blue-hud">
+        <span class="team-label">🔵 BLUE</span>
+        <div class="hero-icons" id="blueHeroIcons"></div>
+        <span class="tower-count">🏰 <span id="blueTowers">3</span></span>
+        <span class="kill-count">⚔️ <span id="blueKills">0</span></span>
+      </div>
+      <div class="timer-box">
+        <div id="gameTimer">00:00</div>
+        <div id="phaseLabel">Early Game</div>
+      </div>
+      <div class="team-hud red-hud">
+        <span class="kill-count">⚔️ <span id="redKills">0</span></span>
+        <span class="tower-count">🏰 <span id="redTowers">3</span></span>
+        <div class="hero-icons" id="redHeroIcons"></div>
+        <span class="team-label">🔴 RED</span>
+      </div>
+    </div>
+
+    <!-- Main Canvas -->
+    <canvas id="gameCanvas"></canvas>
+
+    <!-- Bottom HUD -->
+    <div id="bottomHud">
+
+      <!-- Hero portrait -->
+      <div id="heroPortrait">
+        <div id="portraitIcon" class="portrait-icon"></div>
+        <div class="portrait-info">
+          <div class="hero-name-hud" id="heroNameHud">Hero</div>
+          <div class="bar-wrap hp-wrap">
+            <div id="hpBar" class="hp-bar"></div>
+            <span id="hpText">500/500</span>
+          </div>
+          <div class="bar-wrap mp-wrap">
+            <div id="mpBar" class="mp-bar"></div>
+            <span id="mpText">300/300</span>
+          </div>
+          <div class="xp-wrap">
+            <div id="xpBar" class="xp-bar"></div>
+            <span class="level-badge">Lv <span id="heroLevel">1</span></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Skill bar -->
+      <div id="skillBar">
+        <div class="skill-btn" id="skillQ">
+          <div class="skill-icon" id="skillIconQ"></div>
+          <div class="skill-key">Q</div>
+          <div class="skill-cd" id="cdQ"></div>
+        </div>
+        <div class="skill-btn" id="skillW">
+          <div class="skill-icon" id="skillIconW"></div>
+          <div class="skill-key">W</div>
+          <div class="skill-cd" id="cdW"></div>
+        </div>
+        <div class="skill-btn" id="skillE">
+          <div class="skill-icon" id="skillIconE"></div>
+          <div class="skill-key">E</div>
+          <div class="skill-cd" id="cdE"></div>
+        </div>
+        <div class="skill-btn ult" id="skillR">
+          <div class="skill-icon" id="skillIconR"></div>
+          <div class="skill-key">R</div>
+          <div class="skill-cd" id="cdR"></div>
+        </div>
+      </div>
+
+      <!-- Gold / Items / Shop -->
+      <div id="inventoryPanel">
+        <div id="goldDisplay">💰 <span id="goldAmount">500</span></div>
+        <div id="itemSlots">
+          <div class="item-slot" id="item0"></div>
+          <div class="item-slot" id="item1"></div>
+          <div class="item-slot" id="item2"></div>
+          <div class="item-slot" id="item3"></div>
+          <div class="item-slot" id="item4"></div>
+          <div class="item-slot" id="item5"></div>
+        </div>
+        <button id="btnShop" class="shop-btn">🛒 Shop [B]</button>
+      </div>
+
+      <!-- Minimap -->
+      <div id="minimapContainer">
+        <canvas id="minimap" width="150" height="150"></canvas>
+        <div class="minimap-label">[ MAP ]</div>
+      </div>
+
+    </div><!-- /bottomHud -->
+
+    <!-- Shop Overlay -->
+    <div id="shopOverlay" class="hidden">
+      <div class="shop-panel">
+        <div class="shop-header">
+          <h3>🛒 Item Shop</h3>
+          <span id="shopGoldDisplay">💰 0</span>
+          <button id="closeShop" class="close-btn">✕</button>
+        </div>
+        <div id="shopItems" class="shop-items"></div>
+      </div>
+    </div>
+
+    <!-- Target Info Panel -->
+    <div id="targetPanel" class="hidden">
+      <div class="target-name" id="targetName">Target</div>
+      <div class="bar-wrap"><div id="targetHpBar" class="hp-bar"></div><span id="targetHpText"></span></div>
+    </div>
+
+    <!-- Kill Feed -->
+    <div id="killFeed"></div>
+
+    <!-- Floating damage numbers -->
+    <div id="damageLayer" style="pointer-events:none;position:absolute;inset:0;overflow:hidden"></div>
+
+    <!-- Game Over -->
+    <div id="gameOver" class="hidden">
+      <div class="gameover-panel">
+        <div id="gameOverTitle" class="gameover-title"></div>
+        <div id="gameOverStats" class="gameover-stats"></div>
+        <div class="gameover-btns">
+          <button id="btnPlayAgain" class="btn-primary">🔁 Play Again</button>
+          <button id="btnMainMenu" class="btn-secondary">🏠 Main Menu</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Respawn overlay -->
+    <div id="respawnOverlay" class="hidden">
+      <div class="respawn-panel">
+        <div class="skull">💀</div>
+        <p>You were slain!</p>
+        <p>Respawning in <span id="respawnTimer">5</span>s</p>
+      </div>
+    </div>
+
+  </div><!-- /gameScreen -->
+
+
+  <!-- ==================== TOAST NOTIFICATION ==================== -->
+  <div id="toastNotification" class="toast-notification hidden"></div>
+
+
+  <!-- ==================== FIREBASE SDKs (compat) ==================== -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-analytics-compat.js"></script>
+
+  <!-- ==================== GAME SCRIPTS ==================== -->
+  <script src="js/firebase.js"></script>
+  <script src="js/assets.js"></script>
+  <script src="js/hero.js"></script>
+  <script src="js/map.js"></script>
+  <script src="js/combat.js"></script>
+  <script src="js/ai.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/profile.js"></script>
+  <script src="js/multiplayer.js"></script>
+  <script src="js/matchmaking.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/game.js"></script>
+
+</body>
+</html>
