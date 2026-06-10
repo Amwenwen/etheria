@@ -84,8 +84,10 @@ const Auth = {
     if (!email || !password) { this._showError('Fill in all fields'); return; }
     try {
       this._setLoading(true);
+      this._clearError();
       await FB.auth.signInWithEmailAndPassword(email, password);
     } catch (err) {
+      console.error('[Auth] Login error:', err.code, err.message);
       this._showError(this._friendlyError(err.code));
     } finally {
       this._setLoading(false);
@@ -129,27 +131,32 @@ const Auth = {
   // ---- ON SIGNED IN ----
   async _onSignedIn(user) {
     this.currentUser = user;
-    // Get or create player profile
-    const snap = await FS.playerRef(user.uid).get();
-    if (!snap.exists()) {
-      await this._createPlayerProfile(user, user.displayName || 'Warrior');
+    try {
+      // Get or create player profile
+      const snap = await FS.playerRef(user.uid).get();
+      if (!snap.exists()) {
+        await this._createPlayerProfile(user, user.displayName || 'Warrior');
+      }
+      this.playerData = (await FS.playerRef(user.uid).get()).data();
+
+      // Set online presence
+      await this._setOnline();
+
+      // Start listening for invites now that we have a UID
+      Matchmaking.listenForInvites();
+
+      // Hide auth, show main menu
+      document.getElementById('authScreen').classList.add('hidden');
+      document.getElementById('mainMenu').classList.remove('hidden');
+
+      // Update profile badge in menu
+      this._updateMenuBadge();
+
+      console.log('[Auth] Signed in:', user.uid, 'Player ID:', this.playerData.playerId);
+    } catch (err) {
+      console.error('[Auth] _onSignedIn error:', err);
+      this._showError('Sign-in succeeded but profile load failed. Please refresh.');
     }
-    this.playerData = (await FS.playerRef(user.uid).get()).data();
-
-    // Set online presence
-    await this._setOnline();
-
-    // Start listening for invites now that we have a UID
-    Matchmaking.listenForInvites();
-
-    // Hide auth, show main menu
-    document.getElementById('authScreen').classList.add('hidden');
-    document.getElementById('mainMenu').classList.remove('hidden');
-
-    // Update profile badge in menu
-    this._updateMenuBadge();
-
-    console.log('[Auth] Signed in:', user.uid, 'Player ID:', this.playerData.playerId);
   },
 
   _onSignedOut() {
@@ -283,6 +290,9 @@ const Auth = {
       'auth/weak-password':       'Password is too weak.',
       'auth/too-many-requests':   'Too many attempts. Try again later.',
       'auth/network-request-failed': 'Network error. Check your connection.',
+      'auth/unauthorized-domain': 'This domain is not authorized. Contact the developer.',
+      'auth/operation-not-allowed': 'Sign-in method not enabled. Contact the developer.',
+      'auth/invalid-credential':  'Incorrect email or password.',
     };
     return map[code] || 'Something went wrong. Try again.';
   },

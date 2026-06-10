@@ -435,7 +435,7 @@ const Game = {
       if (u.type === 'nexus')  return; // static
       if (u === this.player)   { u.update(dt, allUnits); return; }
       if (u._isRemote)         { u.update(dt, allUnits); return; } // opponent — state from RTDB
-      if (u.type === 'hero')   { u.update(dt, allUnits); AI.updateHero(u, dt); }
+      if (u.type === 'hero')   { u.update(dt, allUnits); AI.updateHero(u, dt); return; }
       if (u.type === 'minion') { u.update(dt, allUnits); AI.updateMinion(u, dt); }
     });
 
@@ -715,7 +715,7 @@ const Game = {
 
     if (structure.type === 'nexus') {
       const winTeam = structure.team === TEAM_BLUE ? TEAM_RED : TEAM_BLUE;
-      const playerWon = (winTeam === this.player.team);
+      const playerWon = this.player ? (winTeam === this.player.team) : false;
       this.state.running = false;
       cancelAnimationFrame(this.animId);
 
