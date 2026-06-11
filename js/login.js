@@ -4,13 +4,20 @@
 // ===================================================
 
 const Login = {
+  _redirecting: false,
+
   // ---- INIT ----
   init() {
-    // If already signed in, go straight to the lobby
+    // If already signed in on page load, redirect immediately
     FB.auth.onAuthStateChanged(async (user) => {
-      if (user) {
-        await this._ensureProfile(user);
-        window.location.href = 'index.html';
+      if (user && !this._redirecting) {
+        this._redirecting = true;
+        try {
+          await this._ensureProfile(user);
+        } catch (e) {
+          console.warn('[Login] Profile ensure failed:', e);
+        }
+        window.location.replace('index.html');
       }
     });
 
@@ -28,7 +35,6 @@ const Login = {
     document.getElementById('btnEmailLogin').addEventListener('click', () => this._emailLogin());
     document.getElementById('btnEmailRegister').addEventListener('click', () => this._emailRegister());
 
-    // Enter key shortcuts
     document.getElementById('loginEmail').addEventListener('keydown', e => {
       if (e.key === 'Enter') this._emailLogin();
     });
@@ -50,10 +56,13 @@ const Login = {
     const provider = new firebase.auth.GoogleAuthProvider();
     try {
       this._setLoading(true);
+      this._clearError();
       const cred = await FB.auth.signInWithPopup(provider);
       await this._ensureProfile(cred.user);
-      window.location.href = 'index.html';
+      this._redirecting = true;
+      window.location.replace('index.html');
     } catch (err) {
+      console.error('[Login] Google error:', err);
       this._showError(err.message);
       this._setLoading(false);
     }
@@ -67,10 +76,12 @@ const Login = {
     try {
       this._setLoading(true);
       this._clearError();
-      await FB.auth.signInWithEmailAndPassword(email, password);
-      // onAuthStateChanged will fire and redirect
+      const cred = await FB.auth.signInWithEmailAndPassword(email, password);
+      await this._ensureProfile(cred.user);
+      this._redirecting = true;
+      window.location.replace('index.html');
     } catch (err) {
-      console.error('[Login] Login error:', err.code, err.message);
+      console.error('[Login] Email login error:', err.code, err.message);
       this._showError(this._friendlyError(err.code));
       this._setLoading(false);
     }
@@ -89,11 +100,14 @@ const Login = {
 
     try {
       this._setLoading(true);
+      this._clearError();
       const cred = await FB.auth.createUserWithEmailAndPassword(email, password);
       await cred.user.updateProfile({ displayName: username });
       await this._createPlayerProfile(cred.user, username);
-      window.location.href = 'index.html';
+      this._redirecting = true;
+      window.location.replace('index.html');
     } catch (err) {
+      console.error('[Login] Register error:', err.code, err.message);
       this._showError(this._friendlyError(err.code));
       this._setLoading(false);
     }
