@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Warriors of Etheria — Sign In</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+  <!-- ==================== AUTH SCREEN ==================== -->
+  <div id="authScreen">
+    <div class="auth-bg"></div>
+    <div class="auth-content">
+      <div class="auth-logo">
+        <h1>⚔️ Warriors of Etheria</h1>
+        <p class="auth-subtitle">3v3 MOBA RPG</p>
+      </div>
+
+      <div class="auth-card">
+        <!-- Tabs -->
+        <div class="auth-tabs">
+          <button id="tabLogin" class="auth-tab active-tab">Sign In</button>
+          <button id="tabRegister" class="auth-tab">Register</button>
+        </div>
+
+        <!-- Error / Spinner -->
+        <div id="authError" class="auth-error hidden"></div>
+        <div id="authSpinner" class="auth-spinner hidden">⏳ Please wait...</div>
+
+        <!-- LOGIN FORM -->
+        <div id="loginForm">
+          <button id="btnGoogleLogin" class="btn-google">
+            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="G" width="18" />
+            Continue with Google
+          </button>
+          <div class="auth-divider"><span>or</span></div>
+          <div class="auth-field">
+            <label>Email</label>
+            <input type="email" id="loginEmail" placeholder="your@email.com" autocomplete="email" />
+          </div>
+          <div class="auth-field">
+            <label>Password</label>
+            <input type="password" id="loginPassword" placeholder="••••••••" autocomplete="current-password" />
+          </div>
+          <button id="btnEmailLogin" class="btn-primary auth-btn">Sign In</button>
+        </div>
+
+        <!-- REGISTER FORM -->
+        <div id="registerForm" class="hidden">
+          <button id="btnGoogleRegister" class="btn-google">
+            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="G" width="18" />
+            Sign up with Google
+          </button>
+          <div class="auth-divider"><span>or</span></div>
+          <div class="auth-field">
+            <label>Username</label>
+            <input type="text" id="regUsername" placeholder="WarriorName" maxlength="20" autocomplete="username" />
+          </div>
+          <div class="auth-field">
+            <label>Email</label>
+            <input type="email" id="regEmail" placeholder="your@email.com" autocomplete="email" />
+          </div>
+          <div class="auth-field">
+            <label>Password</label>
+            <input type="password" id="regPassword" placeholder="Min 6 characters" autocomplete="new-password" />
+          </div>
+          <div class="auth-field">
+            <label>Confirm Password</label>
+            <input type="password" id="regConfirm" placeholder="Re-enter password" autocomplete="new-password" />
+          </div>
+          <button id="btnEmailRegister" class="btn-primary auth-btn">Create Account</button>
+        </div>
+      </div><!-- /auth-card -->
+    </div>
+  </div><!-- /authScreen -->
+
+
+  <!-- ==================== FIREBASE SDKs (compat) ==================== -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-analytics-compat.js"></script>
+
+  <!-- ==================== AUTH SCRIPTS ==================== -->
+  <script src="js/firebase.js"></script>
+  <script src="js/login.js"></script>
+
+</body>
+</html>
